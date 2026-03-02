@@ -1,0 +1,49 @@
+import { CATEGORIES } from './categories'
+
+const generateProducts = () => {
+  const items = [
+    { name: 'Samsung Galaxy S24 Ultra',       category: 'electronics', price: 129999, rating: 4.8, image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400', stock: 30 },
+    { name: 'OnePlus 12R',                    category: 'electronics', price: 44999,  rating: 4.7, image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400', stock: 50 },
+    { name: 'boAt Rockerz 550 Headphones',    category: 'electronics', price: 1999,   rating: 4.5, image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400', stock: 200 },
+    { name: 'Redmi Note 13 Pro',              category: 'electronics', price: 26999,  rating: 4.6, image: 'https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400', stock: 80 },
+    { name: 'Fabindia Cotton Kurta Set',      category: 'clothing',    price: 2499,   rating: 4.6, image: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=400', stock: 150 },
+    { name: 'Biba Anarkali Suit',             category: 'clothing',    price: 3299,   rating: 4.5, image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400', stock: 100 },
+    { name: 'Raymond Regular Fit Shirt',      category: 'clothing',    price: 1799,   rating: 4.4, image: 'https://images.unsplash.com/photo-1603252109303-2751441dd157?w=400', stock: 200 },
+    { name: 'Wings of Fire — APJ Abdul Kalam',category: 'books',       price: 199,    rating: 4.9, image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400', stock: 500 },
+    { name: 'The 3 Mistakes of My Life',      category: 'books',       price: 249,    rating: 4.7, image: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400', stock: 400 },
+    { name: 'Rich Dad Poor Dad',              category: 'books',       price: 299,    rating: 4.8, image: 'https://images.unsplash.com/photo-1589998059171-988d887df646?w=400', stock: 600 },
+    { name: 'Prestige Electric Pressure Cooker', category: 'home-garden', price: 3499, rating: 4.7, image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400', stock: 75 },
+    { name: 'Bajaj 45L Tower Air Cooler',     category: 'home-garden', price: 11999,  rating: 4.5, image: 'https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=400', stock: 40 },
+    { name: 'Nivia Pro Yoga Mat',             category: 'sports',      price: 899,    rating: 4.5, image: 'https://images.unsplash.com/photo-1601925228792-8a0a21e49bef?w=400', stock: 150 },
+    { name: 'SG Scorer Cricket Bat',          category: 'sports',      price: 2199,   rating: 4.6, image: 'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=400', stock: 80 },
+    { name: 'Mamaearth Ubtan Face Wash',      category: 'beauty',      price: 299,    rating: 4.7, image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400', stock: 800 },
+    { name: 'Biotique Bio Sunscreen SPF 40',  category: 'beauty',      price: 199,    rating: 4.5, image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400', stock: 600 },
+    { name: 'Apple iPad 10th Generation',     category: 'electronics', price: 59900,  rating: 4.8, image: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400', stock: 40 },
+    { name: 'Fire-Boltt Ninja Smartwatch',    category: 'electronics', price: 1499,   rating: 4.4, image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400', stock: 300 },
+    { name: "Jockey Men's T-Shirt Pack of 3", category: 'clothing',    price: 999,    rating: 4.3, image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400', stock: 400 },
+    { name: 'Atomic Habits',                  category: 'books',       price: 349,    rating: 4.9, image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400', stock: 300 },
+  ]
+
+  return items.map((item, index) => ({
+    id: index + 1,
+    ...item,
+    slug: item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+    description: `Premium quality ${item.name}. This product offers exceptional performance and durability. Perfect for everyday use and trusted by millions of Indian customers. Comes with manufacturer warranty and excellent customer support.`,
+    images: [item.image, item.image, item.image],
+    discount: index % 4 === 0 ? 10 : index % 5 === 0 ? 15 : 0,
+    reviews: Math.floor(Math.random() * 5000) + 500,
+    sold: Math.floor(Math.random() * 5000) + 500,
+    isFeatured: index < 6,
+    isNew: index >= 14,
+    tags: [item.category, 'popular', 'trending'].slice(0, Math.floor(Math.random() * 3) + 1),
+    specifications: {
+      Brand:    item.name.split(' ')[0],
+      Category: item.category,
+      Warranty: '1 Year',
+      'In Stock': item.stock > 0 ? 'Yes' : 'No',
+    },
+    createdAt: new Date(Date.now() - Math.random() * 10000000000).toISOString(),
+  }))
+}
+
+export const PRODUCTS = generateProducts()
