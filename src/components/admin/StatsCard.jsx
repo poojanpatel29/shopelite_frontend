@@ -1,22 +1,53 @@
-export default function StatsCard({ title, value, change, icon, color = 'primary' }) {
-  const colors = {
-    primary: 'bg-primary-50 dark:bg-primary-900/20 text-primary-600',
-    green:   'bg-green-50 dark:bg-green-900/20 text-green-600',
-    orange:  'bg-orange-50 dark:bg-orange-900/20 text-orange-600',
-    purple:  'bg-purple-50 dark:bg-purple-900/20 text-purple-600',
-  }
+const COLORS = {
+  violet:  { bg: 'bg-primary-50 dark:bg-primary-950/50', text: 'text-primary-600 dark:text-primary-400', icon: '💰' },
+  blue:    { bg: 'bg-blue-50 dark:bg-blue-950/50',       text: 'text-blue-600 dark:text-blue-400',       icon: '📦' },
+  amber:   { bg: 'bg-amber-50 dark:bg-amber-950/50',     text: 'text-amber-600 dark:text-amber-400',     icon: '🛍️' },
+  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-950/50', text: 'text-emerald-600 dark:text-emerald-400', icon: '👤' },
+}
+
+const ICONS = {
+  revenue:  (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  ),
+  orders:   (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+    </svg>
+  ),
+  products: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+    </svg>
+  ),
+  users:    (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+  ),
+}
+
+export default function StatsCard({ title, value, change, icon = 'revenue', color = 'violet' }) {
+  const cfg        = COLORS[color] || COLORS.violet
   const isPositive = parseFloat(change) >= 0
 
   return (
-    <div className="card p-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl ${colors[color]}`}>{icon}</div>
-        <span className={`text-sm font-medium px-2 py-1 rounded-full ${isPositive ? 'bg-green-50 dark:bg-green-900/20 text-green-600' : 'bg-red-50 dark:bg-red-900/20 text-red-500'}`}>
+    <div className="card p-5 hover:shadow-md transition-all duration-200">
+      <div className="flex items-start justify-between mb-4">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${cfg.bg} ${cfg.text}`}>
+          {ICONS[icon]}
+        </div>
+        <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg ${
+          isPositive
+            ? 'bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'
+            : 'bg-red-50 dark:bg-red-950/50 text-red-500 dark:text-red-400'
+        }`}>
           {isPositive ? '↑' : '↓'} {Math.abs(parseFloat(change))}%
         </span>
       </div>
-      <p className="text-2xl font-display font-bold text-gray-900 dark:text-white">{value}</p>
-      <p className="text-sm text-gray-500 mt-1">{title}</p>
+      <p className="text-2xl font-bold text-zinc-900 dark:text-white tracking-tight">{value}</p>
+      <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-1">{title}</p>
     </div>
   )
 }

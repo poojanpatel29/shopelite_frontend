@@ -1,35 +1,51 @@
 import { forwardRef } from 'react'
 
 const variants = {
-  primary:   'bg-primary-600 hover:bg-primary-700 text-white',
-  secondary: 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200',
-  danger:    'bg-red-500 hover:bg-red-600 text-white',
-  outline:   'border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300',
-  ghost:     'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300',
-  accent:    'bg-accent hover:bg-accent-hover text-white',
+  primary:   'bg-primary-600 hover:bg-primary-700 active:bg-primary-800 text-white shadow-lg shadow-primary-600/20 hover:shadow-primary-600/30',
+  secondary: 'bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700',
+  outline:   'border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800/60 text-zinc-700 dark:text-zinc-300',
+  ghost:     'hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400',
+  danger:    'bg-red-500 hover:bg-red-600 active:bg-red-700 text-white shadow-lg shadow-red-500/20',
+  accent:    'bg-amber-500 hover:bg-amber-600 text-white shadow-lg shadow-amber-500/20',
+  dark:      'bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-100 text-white dark:text-zinc-900',
 }
 
 const sizes = {
-  sm:   'px-3 py-1.5 text-sm',
-  md:   'px-4 py-2',
-  lg:   'px-6 py-3 text-lg',
-  icon: 'p-2',
+  xs:   'px-2.5 py-1.5 text-xs rounded-lg',
+  sm:   'px-3.5 py-2 text-sm rounded-xl',
+  md:   'px-5 py-2.5 text-sm rounded-xl',
+  lg:   'px-6 py-3 text-base rounded-xl',
+  xl:   'px-8 py-4 text-base rounded-2xl',
+  icon: 'p-2.5 rounded-xl',
 }
 
-const Button = forwardRef(({ variant = 'primary', size = 'md', className = '', loading = false, disabled, children, ...props }, ref) => {
+const Button = forwardRef(({
+  variant  = 'primary',
+  size     = 'md',
+  className = '',
+  loading  = false,
+  disabled,
+  children,
+  ...props
+}, ref) => {
   return (
     <button
       ref={ref}
       disabled={disabled || loading}
-      className={`inline-flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`
+        inline-flex items-center justify-center gap-2
+        font-semibold transition-all duration-200
+        disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none
+        ${variants[variant]} ${sizes[size]} ${className}
+      `}
       {...props}
     >
-      {loading && (
-        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+      {loading ? (
+        <svg className="animate-spin h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none">
+          <circle className="opacity-20" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+          <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
         </svg>
-      )}
+      ) : null}
       {children}
     </button>
   )

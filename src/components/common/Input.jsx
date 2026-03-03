@@ -1,23 +1,55 @@
-import { forwardRef, useId } from 'react'
+import { forwardRef } from 'react'
 
-const Input = forwardRef(({ label, error, hint, icon, rightElement, className = '', ...props }, ref) => {
-  const id = useId()
+const Input = forwardRef(({
+  label,
+  error,
+  hint,
+  icon,
+  iconRight,
+  className = '',
+  size = 'md',
+  ...props
+}, ref) => {
+  const sizeClass = size === 'sm' ? 'py-2 text-sm' : size === 'lg' ? 'py-4 text-base' : 'py-3 text-sm'
 
   return (
-    <div className="w-full">
-      {label && <label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>}
+    <div className={`w-full ${className}`}>
+      {label && (
+        <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+          {label}
+        </label>
+      )}
       <div className="relative">
-        {icon && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">{icon}</span>}
+        {icon && (
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500 pointer-events-none">
+            {icon}
+          </div>
+        )}
         <input
           ref={ref}
-          id={id}
-          className={`w-full px-4 py-2.5 rounded-lg border transition-all duration-200 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 ${error ? 'border-red-400 focus:ring-red-400' : 'border-gray-200 dark:border-gray-700'} ${icon ? 'pl-10' : ''} ${rightElement ? 'pr-10' : ''} ${className}`}
+          className={`
+            w-full ${icon ? 'pl-10' : 'pl-4'} ${iconRight ? 'pr-10' : 'pr-4'} ${sizeClass}
+            rounded-xl
+            border ${error
+              ? 'border-red-400 dark:border-red-500 focus:ring-red-500/30 focus:border-red-500'
+              : 'border-zinc-200 dark:border-zinc-700 focus:border-primary-500 dark:focus:border-primary-400 focus:ring-primary-500/20'}
+            bg-zinc-50 dark:bg-zinc-800/60
+            text-zinc-900 dark:text-zinc-100
+            placeholder:text-zinc-400 dark:placeholder:text-zinc-500
+            focus:outline-none focus:ring-2
+            transition-all duration-200
+            disabled:opacity-50 disabled:cursor-not-allowed
+          `}
           {...props}
         />
-        {rightElement && <span className="absolute right-3 top-1/2 -translate-y-1/2">{rightElement}</span>}
+        {iconRight && (
+          <div className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 dark:text-zinc-500">
+            {iconRight}
+          </div>
+        )}
       </div>
-      {error  && <p className="mt-1 text-sm text-red-500">{error}</p>}
-      {hint   && !error && <p className="mt-1 text-sm text-gray-500">{hint}</p>}
+      {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
+      {hint && !error && <p className="mt-1.5 text-xs text-zinc-400">{hint}</p>}
     </div>
   )
 })
