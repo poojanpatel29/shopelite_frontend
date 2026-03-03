@@ -29,7 +29,7 @@ export default function SalesChart() {
     plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
     scales: {
       x: { grid: { display: false }, ticks: { color: '#9ca3af' } },
-      y: { grid: { color: 'rgba(156,163,175,0.1)' }, ticks: { color: '#9ca3af', callback: (v) => `$${(v/1000).toFixed(0)}k` } },
+      y: { grid: { color: 'rgba(156,163,175,0.1)' }, ticks: { color: '#9ca3af', callback: (v) => `₹${(v/1000).toFixed(0)}k` } },
     },
   }
 
