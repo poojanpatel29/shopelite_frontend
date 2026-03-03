@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://shopelite-backend-8skx.onrender.com/api/v1'
+const BASE_URL = 'https://shopelite-backend-8skx.onrender.com/api/v1'
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
