@@ -13,7 +13,6 @@ import ProductCard from '../../components/product/ProductCard'
 
 export default function ProductDetail() {
   const { id } = useParams()
-  const dispatch = useDispatch()
   const allProducts = useSelector(selectAllProducts)
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
