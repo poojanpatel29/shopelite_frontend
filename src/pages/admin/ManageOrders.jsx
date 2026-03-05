@@ -13,34 +13,27 @@ const STEPS = [
   { key: 'delivered', label: 'Delivered', icon: '✅' },
 ];
 
-const STATUS_MAP = {
+const STATUS_BADGE = {
   delivered: 'success',
   shipped: 'primary',
   out_for_delivery: 'warning',
   processing: 'warning',
-  pending: 'default',
   order_placed: 'default',
 };
 
+const FILTERS = ['all', 'order_placed', 'processing', 'shipped', 'out_for_delivery', 'delivered'];
+
+function normalizeStatus(status) {
+  return (status || '').toLowerCase().replace(/ /g, '_');
+}
+
 function statusToIdx(status) {
-  const s = (status || '').toLowerCase().replace(/ /g, '_');
-  return STEPS.findIndex((step) => step.key === s);
+  return STEPS.findIndex((s) => s.key === normalizeStatus(status));
 }
 
 function badgeVariant(status) {
-  const s = (status || '').toLowerCase().replace(/ /g, '_');
-  return STATUS_MAP[s] || 'default';
+  return STATUS_BADGE[normalizeStatus(status)] || 'default';
 }
-
-const FILTERS = [
-  'all',
-  'order_placed',
-  'processing',
-  'shipped',
-  'out_for_delivery',
-  'delivered',
-  'cancelled',
-];
 
 export default function ManageOrders() {
   const dispatch = useDispatch();
@@ -58,22 +51,17 @@ export default function ManageOrders() {
   }, []);
 
   const filtered =
-    filter === 'all'
-      ? orders
-      : orders.filter((o) => {
-          const s = (o.status || '').toLowerCase().replace(/ /g, '_');
-          return s === filter;
-        });
+    filter === 'all' ? orders : orders.filter((o) => normalizeStatus(o.status) === filter);
+
+  const filterCount = (f) =>
+    f === 'all' ? orders.length : orders.filter((o) => normalizeStatus(o.status) === f).length;
 
   const handleAdvance = async (order) => {
     const currentIdx = statusToIdx(order.status);
-    const nextIdx = currentIdx + 1;
+    const nextStep = STEPS[currentIdx + 1];
+    if (!nextStep) return;
 
-    if (nextIdx >= STEPS.length) return;
-
-    const nextStep = STEPS[nextIdx];
     setAdvancing(order.id);
-
     try {
       const updated = await ordersApi.updateStatus(order.id, nextStep.key);
       setOrders((prev) => prev.map((o) => (o.id === order.id ? updated : o)));
@@ -89,11 +77,6 @@ export default function ManageOrders() {
       setAdvancing(null);
     }
   };
-
-  const filterCount = (f) =>
-    f === 'all'
-      ? orders.length
-      : orders.filter((o) => (o.status || '').toLowerCase().replace(/ /g, '_') === f).length;
 
   if (loading)
     return (
@@ -136,16 +119,14 @@ export default function ManageOrders() {
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-zinc-50 dark:bg-zinc-800/50">
-                {['Order', 'Items', 'Total', 'Payment', 'Current Status', 'Progress', 'Action'].map(
-                  (h) => (
-                    <th
-                      key={h}
-                      className="text-left px-5 py-3.5 text-xs font-bold text-zinc-400 uppercase tracking-wider whitespace-nowrap"
-                    >
-                      {h}
-                    </th>
-                  )
-                )}
+                {['Order', 'Items', 'Total', 'Payment', 'Status', 'Progress', 'Action'].map((h) => (
+                  <th
+                    key={h}
+                    className="text-left px-5 py-3.5 text-xs font-bold text-zinc-400 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    {h}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -178,7 +159,7 @@ export default function ManageOrders() {
                         </p>
                       </td>
 
-                      {/* Items count */}
+                      {/* Items */}
                       <td className="px-5 py-4 text-zinc-500">
                         {order.items?.length} item{order.items?.length !== 1 ? 's' : ''}
                       </td>
@@ -193,7 +174,7 @@ export default function ManageOrders() {
                         {order.payment_method || '—'}
                       </td>
 
-                      {/* Current status badge */}
+                      {/* Status badge */}
                       <td className="px-5 py-4">
                         <Badge
                           variant={badgeVariant(order.status)}
@@ -204,17 +185,16 @@ export default function ManageOrders() {
                         </Badge>
                       </td>
 
-                      {/* Mini step progress */}
+                      {/* Mini progress bar */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-0.5">
                           {STEPS.map((step, i) => (
                             <div
                               key={step.key}
                               title={step.label}
-                              className={`h-1.5 rounded-full transition-all duration-300 ${
+                              className={`h-1.5 w-4 rounded-full transition-all duration-300 ${
                                 i <= currentIdx ? 'bg-primary-500' : 'bg-zinc-200 dark:bg-zinc-700'
                               }`}
-                              style={{ width: `${Math.floor(80 / STEPS.length)}px` }}
                             />
                           ))}
                           <span className="text-xs text-zinc-400 ml-1.5 whitespace-nowrap">
@@ -223,7 +203,7 @@ export default function ManageOrders() {
                         </div>
                       </td>
 
-                      {/* Advance button — only shows if not final step */}
+                      {/* Action */}
                       <td className="px-5 py-4">
                         {isFinal ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-lg">
@@ -237,7 +217,7 @@ export default function ManageOrders() {
                             disabled={isAdvancing}
                             className="whitespace-nowrap"
                           >
-                            {nextStep.icon} → {nextStep.label}
+                            {nextStep.icon} {nextStep.label}
                           </Button>
                         ) : null}
                       </td>
