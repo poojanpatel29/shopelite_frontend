@@ -5,66 +5,127 @@ import { addToast } from '../../redux/slices/notificationsSlice';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
 
-const STATUSES = ['all', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+const STEPS = [
+  { key: 'order_placed', label: 'Order Placed', icon: '📋' },
+  { key: 'processing', label: 'Processing', icon: '⚙️' },
+  { key: 'shipped', label: 'Shipped', icon: '🚚' },
+  { key: 'out_for_delivery', label: 'Out for Delivery', icon: '📦' },
+  { key: 'delivered', label: 'Delivered', icon: '✅' },
+];
 
-const statusMap = {
+const STATUS_MAP = {
   delivered: 'success',
   shipped: 'primary',
+  out_for_delivery: 'warning',
   processing: 'warning',
-  cancelled: 'danger',
   pending: 'default',
+  order_placed: 'default',
 };
+
+function statusToIdx(status) {
+  const s = (status || '').toLowerCase().replace(/ /g, '_');
+  return STEPS.findIndex((step) => step.key === s);
+}
+
+function badgeVariant(status) {
+  const s = (status || '').toLowerCase().replace(/ /g, '_');
+  return STATUS_MAP[s] || 'default';
+}
+
+const FILTERS = [
+  'all',
+  'order_placed',
+  'processing',
+  'shipped',
+  'out_for_delivery',
+  'delivered',
+  'cancelled',
+];
 
 export default function ManageOrders() {
   const dispatch = useDispatch();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [advancing, setAdvancing] = useState(null);
 
   useEffect(() => {
     ordersApi
       .getAll()
       .then(setOrders)
-      .catch((err) => console.error(err))
+      .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
 
-  const filtered = filter === 'all' ? orders : orders.filter((o) => o.status === filter);
+  const filtered =
+    filter === 'all'
+      ? orders
+      : orders.filter((o) => {
+          const s = (o.status || '').toLowerCase().replace(/ /g, '_');
+          return s === filter;
+        });
 
-  const handleStatusChange = async (orderId, newStatus) => {
+  const handleAdvance = async (order) => {
+    const currentIdx = statusToIdx(order.status);
+    const nextIdx = currentIdx + 1;
+
+    if (nextIdx >= STEPS.length) return;
+
+    const nextStep = STEPS[nextIdx];
+    setAdvancing(order.id);
+
     try {
-      const updated = await ordersApi.updateStatus(orderId, newStatus);
-      setOrders((prev) => prev.map((o) => (o.id === orderId ? updated : o)));
-      dispatch(addToast({ type: 'success', message: `Order updated to ${newStatus}` }));
-    } catch {
-      dispatch(addToast({ type: 'error', message: 'Failed to update status' }));
+      const updated = await ordersApi.updateStatus(order.id, nextStep.key);
+      setOrders((prev) => prev.map((o) => (o.id === order.id ? updated : o)));
+      dispatch(addToast({ type: 'success', message: `Order moved to "${nextStep.label}"` }));
+    } catch (err) {
+      dispatch(
+        addToast({
+          type: 'error',
+          message: err?.response?.data?.detail || 'Failed to update order',
+        })
+      );
+    } finally {
+      setAdvancing(null);
     }
   };
+
+  const filterCount = (f) =>
+    f === 'all'
+      ? orders.length
+      : orders.filter((o) => (o.status || '').toLowerCase().replace(/ /g, '_') === f).length;
 
   if (loading)
     return (
       <div className="flex justify-center items-center py-24">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-gray-200 border-t-primary-600" />
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-zinc-200 border-t-primary-600" />
       </div>
     );
 
   return (
     <div className="space-y-6">
-      <h1 className="page-title">Orders ({orders.length})</h1>
+      {/* Header */}
+      <div>
+        <h1 className="page-title">Orders</h1>
+        <p className="text-zinc-500 text-sm mt-1">{orders.length} total orders</p>
+      </div>
 
-      {/* Filter Tabs */}
+      {/* Filter pills */}
       <div className="flex gap-2 flex-wrap">
-        {STATUSES.map((s) => (
+        {FILTERS.map((f) => (
           <button
-            key={s}
-            onClick={() => setFilter(s)}
-            className={`px-4 py-2 rounded-xl text-sm font-medium capitalize transition-all ${
-              filter === s
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-4 py-2 rounded-xl text-sm font-semibold capitalize transition-all duration-150 ${
+              filter === f
+                ? 'bg-primary-600 text-white shadow-md shadow-primary-600/20'
+                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
             }`}
           >
-            {s} {s !== 'all' && `(${orders.filter((o) => o.status === s).length})`}
+            {f.replace(/_/g, ' ')}
+            <span className={`ml-1.5 text-xs ${filter === f ? 'opacity-70' : 'text-zinc-400'}`}>
+              ({filterCount(f)})
+            </span>
           </button>
         ))}
       </div>
@@ -73,64 +134,116 @@ export default function ManageOrders() {
       <div className="card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-800/50">
-              <tr>
-                {['Order', 'Items', 'Total', 'Payment', 'Status', 'Date', 'Update'].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left px-6 py-4 font-medium text-gray-500 dark:text-gray-400"
-                  >
-                    {h}
-                  </th>
-                ))}
+            <thead>
+              <tr className="bg-zinc-50 dark:bg-zinc-800/50">
+                {['Order', 'Items', 'Total', 'Payment', 'Current Status', 'Progress', 'Action'].map(
+                  (h) => (
+                    <th
+                      key={h}
+                      className="text-left px-5 py-3.5 text-xs font-bold text-zinc-400 uppercase tracking-wider whitespace-nowrap"
+                    >
+                      {h}
+                    </th>
+                  )
+                )}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-gray-400">
+                  <td colSpan={7} className="text-center py-16 text-zinc-400">
                     No orders found
                   </td>
                 </tr>
               ) : (
-                filtered.map((order) => (
-                  <tr
-                    key={order.id}
-                    className="hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors"
-                  >
-                    <td className="px-6 py-4 font-mono text-primary-600 font-semibold text-xs">
-                      {order.order_number}
-                    </td>
-                    <td className="px-6 py-4 text-gray-500">{order.items?.length} items</td>
-                    <td className="px-6 py-4 font-bold text-gray-900 dark:text-white">
-                      ₹{Number(order.total).toLocaleString('en-IN')}
-                    </td>
-                    <td className="px-6 py-4 text-gray-500 capitalize">
-                      {order.payment_method || '—'}
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge variant={statusMap[order.status] || 'default'} className="capitalize">
-                        {order.status}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4 text-gray-500">
-                      {new Date(order.created_at).toLocaleDateString('en-IN')}
-                    </td>
-                    <td className="px-6 py-4">
-                      <select
-                        value={order.status}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                        className="text-xs font-medium rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-2 py-1 capitalize focus:outline-none focus:ring-1 focus:ring-primary-500"
-                      >
-                        {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((s) => (
-                          <option key={s} value={s}>
-                            {s}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                  </tr>
-                ))
+                filtered.map((order) => {
+                  const currentIdx = statusToIdx(order.status);
+                  const nextStep =
+                    currentIdx >= 0 && currentIdx < STEPS.length - 1 ? STEPS[currentIdx + 1] : null;
+                  const isFinal = currentIdx === STEPS.length - 1;
+                  const isAdvancing = advancing === order.id;
+
+                  return (
+                    <tr
+                      key={order.id}
+                      className="hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30 transition-colors"
+                    >
+                      {/* Order number + date */}
+                      <td className="px-5 py-4">
+                        <p className="font-mono text-xs font-bold text-primary-600 dark:text-primary-400 tracking-wider">
+                          {order.order_number}
+                        </p>
+                        <p className="text-xs text-zinc-400 mt-0.5">
+                          {new Date(order.created_at).toLocaleDateString('en-IN')}
+                        </p>
+                      </td>
+
+                      {/* Items count */}
+                      <td className="px-5 py-4 text-zinc-500">
+                        {order.items?.length} item{order.items?.length !== 1 ? 's' : ''}
+                      </td>
+
+                      {/* Total */}
+                      <td className="px-5 py-4 font-bold text-zinc-900 dark:text-white">
+                        ₹{Number(order.total).toLocaleString('en-IN')}
+                      </td>
+
+                      {/* Payment */}
+                      <td className="px-5 py-4 text-zinc-500 capitalize">
+                        {order.payment_method || '—'}
+                      </td>
+
+                      {/* Current status badge */}
+                      <td className="px-5 py-4">
+                        <Badge
+                          variant={badgeVariant(order.status)}
+                          dot
+                          className="capitalize whitespace-nowrap"
+                        >
+                          {(order.status || '').replace(/_/g, ' ')}
+                        </Badge>
+                      </td>
+
+                      {/* Mini step progress */}
+                      <td className="px-5 py-4">
+                        <div className="flex items-center gap-0.5">
+                          {STEPS.map((step, i) => (
+                            <div
+                              key={step.key}
+                              title={step.label}
+                              className={`h-1.5 rounded-full transition-all duration-300 ${
+                                i <= currentIdx ? 'bg-primary-500' : 'bg-zinc-200 dark:bg-zinc-700'
+                              }`}
+                              style={{ width: `${Math.floor(80 / STEPS.length)}px` }}
+                            />
+                          ))}
+                          <span className="text-xs text-zinc-400 ml-1.5 whitespace-nowrap">
+                            {currentIdx + 1}/{STEPS.length}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Advance button — only shows if not final step */}
+                      <td className="px-5 py-4">
+                        {isFinal ? (
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-lg">
+                            ✓ Complete
+                          </span>
+                        ) : nextStep ? (
+                          <Button
+                            size="sm"
+                            onClick={() => handleAdvance(order)}
+                            loading={isAdvancing}
+                            disabled={isAdvancing}
+                            className="whitespace-nowrap"
+                          >
+                            {nextStep.icon} → {nextStep.label}
+                          </Button>
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
