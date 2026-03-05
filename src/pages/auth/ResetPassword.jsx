@@ -1,23 +1,23 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import Input from '../../components/common/Input'
-import Button from '../../components/common/Button'
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Input from '../../components/common/Input';
+import Button from '../../components/common/Button';
 
 export default function ResetPassword() {
-  const [form, setForm]       = useState({ password: '', confirm: '' })
-  const [loading, setLoading] = useState(false)
-  const navigate              = useNavigate()
+  const [form, setForm] = useState({ password: '', confirm: '' });
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const mismatch = form.password && form.confirm && form.password !== form.confirm
+  const mismatch = form.password && form.confirm && form.password !== form.confirm;
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (mismatch) return
-    setLoading(true)
-    await new Promise((r) => setTimeout(r, 800))
-    setLoading(false)
-    navigate('/auth/login')
-  }
+    e.preventDefault();
+    if (mismatch) return;
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 800));
+    setLoading(false);
+    navigate('/auth/login');
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-50 dark:bg-zinc-950 p-4">
@@ -26,7 +26,9 @@ export default function ResetPassword() {
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center shadow-lg shadow-primary-600/30">
             <span className="text-white font-bold">S</span>
           </div>
-          <span className="font-bold text-xl text-zinc-900 dark:text-white">Shop<span className="text-primary-600">Elite</span></span>
+          <span className="font-bold text-xl text-zinc-900 dark:text-white">
+            Shop<span className="text-primary-600">Elite</span>
+          </span>
         </Link>
 
         <div className="card p-8">
@@ -52,12 +54,18 @@ export default function ResetPassword() {
               placeholder="Repeat password"
               required
             />
-            <Button type="submit" className="w-full" size="lg" loading={loading} disabled={!!mismatch}>
+            <Button
+              type="submit"
+              className="w-full"
+              size="lg"
+              loading={loading}
+              disabled={!!mismatch}
+            >
               Reset Password
             </Button>
           </form>
         </div>
       </div>
     </div>
-  )
+  );
 }

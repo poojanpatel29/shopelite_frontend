@@ -1,10 +1,31 @@
-import { Line } from 'react-chartjs-2'
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js'
+import { Line } from 'react-chartjs-2';
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+  Filler
+);
 
-const months    = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-const salesData = [12400, 15200, 18900, 14300, 22100, 28000, 24500, 31200, 27800, 35600, 29400, 42000]
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const salesData = [
+  12400, 15200, 18900, 14300, 22100, 28000, 24500, 31200, 27800, 35600, 29400, 42000,
+];
 
 export default function SalesChart() {
   const data = {
@@ -25,7 +46,7 @@ export default function SalesChart() {
         borderWidth: 2,
       },
     ],
-  }
+  };
 
   const options = {
     responsive: true,
@@ -63,7 +84,7 @@ export default function SalesChart() {
       },
     },
     interaction: { mode: 'index', intersect: false },
-  }
+  };
 
   return (
     <div className="card p-6 h-full">
@@ -78,5 +99,5 @@ export default function SalesChart() {
       </div>
       <Line data={data} options={options} />
     </div>
-  )
+  );
 }

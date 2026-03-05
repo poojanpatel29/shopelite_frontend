@@ -4,8 +4,20 @@ export const MOCK_ORDERS = [
     userId: 2,
     status: 'delivered',
     items: [
-      { productId: 1, name: 'Samsung Galaxy S24 Ultra', price: 129999, quantity: 1, image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=100' },
-      { productId: 3, name: 'boAt Rockerz 550',         price: 1999,   quantity: 1, image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=100' },
+      {
+        productId: 1,
+        name: 'Samsung Galaxy S24 Ultra',
+        price: 129999,
+        quantity: 1,
+        image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=100',
+      },
+      {
+        productId: 3,
+        name: 'boAt Rockerz 550',
+        price: 1999,
+        quantity: 1,
+        image: 'https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=100',
+      },
     ],
     total: 131998,
     subtotal: 131998,
@@ -16,11 +28,11 @@ export const MOCK_ORDERS = [
     createdAt: '2024-12-01T10:30:00Z',
     updatedAt: '2024-12-03T14:00:00Z',
     tracking: [
-      { status: 'Order Placed',     date: '2024-12-01T10:30:00Z', done: true },
-      { status: 'Processing',       date: '2024-12-01T14:00:00Z', done: true },
-      { status: 'Shipped',          date: '2024-12-02T09:00:00Z', done: true },
+      { status: 'Order Placed', date: '2024-12-01T10:30:00Z', done: true },
+      { status: 'Processing', date: '2024-12-01T14:00:00Z', done: true },
+      { status: 'Shipped', date: '2024-12-02T09:00:00Z', done: true },
       { status: 'Out for Delivery', date: '2024-12-03T08:00:00Z', done: true },
-      { status: 'Delivered',        date: '2024-12-03T14:00:00Z', done: true },
+      { status: 'Delivered', date: '2024-12-03T14:00:00Z', done: true },
     ],
   },
   {
@@ -28,7 +40,13 @@ export const MOCK_ORDERS = [
     userId: 2,
     status: 'shipped',
     items: [
-      { productId: 5, name: 'Fabindia Cotton Kurta Set', price: 2499, quantity: 2, image: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=100' },
+      {
+        productId: 5,
+        name: 'Fabindia Cotton Kurta Set',
+        price: 2499,
+        quantity: 2,
+        image: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=100',
+      },
     ],
     total: 4998,
     subtotal: 4998,
@@ -39,11 +57,11 @@ export const MOCK_ORDERS = [
     createdAt: '2024-12-10T15:00:00Z',
     updatedAt: '2024-12-11T10:00:00Z',
     tracking: [
-      { status: 'Order Placed',     date: '2024-12-10T15:00:00Z', done: true },
-      { status: 'Processing',       date: '2024-12-10T18:00:00Z', done: true },
-      { status: 'Shipped',          date: '2024-12-11T10:00:00Z', done: true },
-      { status: 'Out for Delivery', date: null,                   done: false },
-      { status: 'Delivered',        date: null,                   done: false },
+      { status: 'Order Placed', date: '2024-12-10T15:00:00Z', done: true },
+      { status: 'Processing', date: '2024-12-10T18:00:00Z', done: true },
+      { status: 'Shipped', date: '2024-12-11T10:00:00Z', done: true },
+      { status: 'Out for Delivery', date: null, done: false },
+      { status: 'Delivered', date: null, done: false },
     ],
   },
-]
+];

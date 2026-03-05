@@ -1,12 +1,13 @@
-import { createContext, useContext } from 'react'
-import { useSelector } from 'react-redux'
-import { selectAuth } from '../redux/slices/authSlice'
+import { createContext, useContext } from 'react';
+import { useSelector } from 'react-redux';
+import { selectAuth } from '../redux/slices/authSlice';
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const auth = useSelector(selectAuth)
-  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
+  const auth = useSelector(selectAuth);
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }
 
-export const useAuthContext = () => useContext(AuthContext)
+// eslint-disable-next-line react-refresh/only-export-components
+export const useAuthContext = () => useContext(AuthContext);

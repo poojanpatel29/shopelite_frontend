@@ -1,7 +1,7 @@
-import { Outlet } from 'react-router-dom'
-import Navbar from './Navbar'
-import Footer from './Footer'
-import ToastContainer from '../common/Toast'
+import { Outlet } from 'react-router-dom';
+import Navbar from './Navbar';
+import Footer from './Footer';
+import ToastContainer from '../common/Toast';
 
 export default function UserLayout() {
   return (
@@ -13,5 +13,5 @@ export default function UserLayout() {
       <Footer />
       <ToastContainer />
     </div>
-  )
+  );
 }

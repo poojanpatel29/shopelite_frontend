@@ -1,27 +1,33 @@
-import { useState, useMemo, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { selectFilters, setPage } from '../../redux/slices/filtersSlice'
-import { setProducts, setTotal, setLoading, selectAllProducts, selectProductsLoading, selectProductsTotal } from '../../redux/slices/productsSlice'
-import { productsApi } from '../../services/realApi'
-import { useDebounce } from '../../hooks/useDebounce'
-import ProductCard from '../../components/product/ProductCard'
-import ProductFilters from '../../components/product/ProductFilters'
-import Pagination from '../../components/common/Pagination'
-import Spinner from '../../components/common/Spinner'
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectFilters, setPage } from '../../redux/slices/filtersSlice';
+import {
+  setProducts,
+  setTotal,
+  setLoading,
+  selectAllProducts,
+  selectProductsLoading,
+  selectProductsTotal,
+} from '../../redux/slices/productsSlice';
+import { productsApi } from '../../services/realApi';
+import { useDebounce } from '../../hooks/useDebounce';
+import ProductCard from '../../components/product/ProductCard';
+import ProductFilters from '../../components/product/ProductFilters';
+import Pagination from '../../components/common/Pagination';
 
 export default function ProductListing() {
-  const dispatch = useDispatch()
-  const filters = useSelector(selectFilters)
-  const products = useSelector(selectAllProducts)
-  const loading = useSelector(selectProductsLoading)
-  const total = useSelector(selectProductsTotal)
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const dispatch = useDispatch();
+  const filters = useSelector(selectFilters);
+  const products = useSelector(selectAllProducts);
+  const loading = useSelector(selectProductsLoading);
+  const total = useSelector(selectProductsTotal);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const debouncedSearch = useDebounce(filters.search, 500)
+  const debouncedSearch = useDebounce(filters.search, 500);
 
   useEffect(() => {
     const fetchProducts = async () => {
-      dispatch(setLoading(true))
+      dispatch(setLoading(true));
       try {
         const data = await productsApi.getAll({
           page: filters.page,
@@ -29,24 +35,30 @@ export default function ProductListing() {
           category: filters.category !== 'all' ? filters.category : undefined,
           search: debouncedSearch || undefined,
           min_price: filters.priceMin > 0 ? filters.priceMin : undefined,
-          max_price: filters.priceMax < 200000 ? filters.priceMax : undefined,  // ← change 5000 to 200000
+          max_price: filters.priceMax < 200000 ? filters.priceMax : undefined, // ← change 5000 to 200000
           sort_by: filters.sortBy,
           in_stock: filters.inStock || undefined,
-        })
-        dispatch(setProducts(data.items))
-        dispatch(setTotal(data.total))
+        });
+        dispatch(setProducts(data.items));
+        dispatch(setTotal(data.total));
       } catch (err) {
-        console.error(err)
+        console.error(err);
       } finally {
-        dispatch(setLoading(false))
+        dispatch(setLoading(false));
       }
-    }
-    fetchProducts()
+    };
+    fetchProducts();
   }, [
-    filters.page, filters.perPage, filters.category,
-    debouncedSearch, filters.priceMin, filters.priceMax,
-    filters.sortBy, filters.inStock,
-  ])
+    filters.page,
+    filters.perPage,
+    filters.category,
+    debouncedSearch,
+    filters.priceMin,
+    filters.priceMax,
+    filters.sortBy,
+    filters.inStock,
+    dispatch,
+  ]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -55,8 +67,18 @@ export default function ProductListing() {
           <h1 className="page-title">All Products</h1>
           <p className="text-gray-500 text-sm mt-1">{total} products found</p>
         </div>
-        <button onClick={() => setDrawerOpen(true)} className="lg:hidden btn-secondary text-sm flex items-center gap-2">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z" /></svg>
+        <button
+          onClick={() => setDrawerOpen(true)}
+          className="lg:hidden btn-secondary text-sm flex items-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L13 13.414V19a1 1 0 01-.553.894l-4 2A1 1 0 017 21v-7.586L3.293 6.707A1 1 0 013 6V4z"
+            />
+          </svg>
           Filters
         </button>
       </div>
@@ -76,12 +98,16 @@ export default function ProductListing() {
           ) : products.length === 0 ? (
             <div className="text-center py-24">
               <div className="text-6xl mb-4">🔍</div>
-              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">No products found</h3>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                No products found
+              </h3>
               <p className="text-gray-500">Try adjusting your filters</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-              {products.map((p) => <ProductCard key={p.id} product={p} />)}
+              {products.map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
             </div>
           )}
 
@@ -89,7 +115,10 @@ export default function ProductListing() {
             currentPage={filters.page}
             totalItems={total}
             itemsPerPage={filters.perPage}
-            onPageChange={(page) => { dispatch(setPage(page)); window.scrollTo({ top: 0, behavior: 'smooth' }) }}
+            onPageChange={(page) => {
+              dispatch(setPage(page));
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
           />
         </div>
       </div>
@@ -107,5 +136,5 @@ export default function ProductListing() {
         </div>
       )}
     </div>
-  )
+  );
 }
