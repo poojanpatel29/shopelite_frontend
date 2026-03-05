@@ -5,12 +5,24 @@ import { ordersApi } from '../../services/realApi';
 export default function OrderTracking() {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    ordersApi.getById(id).then(setOrder).catch(console.error);
-    // .finally(() => setLoading(false));
+    ordersApi
+      .getById(id)
+      .then(setOrder)
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+        <p className="ml-4 text-gray-500">Loading order details...</p>
+      </div>
+    );
+  }
 
   if (!order)
     return (
