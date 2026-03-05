@@ -1,6 +1,4 @@
 {
-  "frontend/**/*.{js,jsx,ts,tsx}": [
-    "npm --prefix frontend run lint",
-    "npm --prefix frontend run format"
-  ]
+  "*.{js,jsx,ts,tsx}": ["npm run lint", "npm run format"],
+  "*.{json,css,md}": ["npm run format"]
 }
