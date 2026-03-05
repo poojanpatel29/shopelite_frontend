@@ -28,11 +28,15 @@ function normalizeStatus(status) {
 }
 
 function statusToIdx(status) {
-  return STEPS.findIndex((s) => s.key === normalizeStatus(status));
+  const normalized = normalizeStatus(status);
+  if (normalized === 'pending') return 0;
+  return STEPS.findIndex((s) => s.key === normalized);
 }
 
 function badgeVariant(status) {
-  return STATUS_BADGE[normalizeStatus(status)] || 'default';
+  const normalized = normalizeStatus(status);
+  if (normalized === 'pending') return 'default';
+  return STATUS_BADGE[normalized] || 'default';
 }
 
 export default function ManageOrders() {
